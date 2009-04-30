@@ -1,0 +1,12 @@
+
+Extension for PunBB forums to allow dice rolls for users.
+
+Installation
+------------
+
+Go to your PunBB directory:
+
+cd extensions
+mkdir pun_dice
+git remote add origin git@github.com:YOUR_USERNAME/pun_bb.git
+git pull
