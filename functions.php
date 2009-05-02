@@ -9,13 +9,20 @@
  *
  * Changelog:
  *  v0.1 Initial release
+ *  v0.3 Added conditions
+ *       First steps in multilanguage support
  */
 
 if (!defined('FORUM')) die();
 
+define('DR_FALSE_STRING', ' Falso! ');
+define('DR_TRUE_STRING', ' Cierto! ');
+define('DR_INVALID', ' Expresi&oacute;n no v&aacute;lida ');
+define('DR_INVALID_EXPRESSION', ' Expresi&oacute;n no v&aacute;lida ');
+
 if (!function_exists('dr_parse'))
 {
-  function dr_parse($text) 
+  function dr_parse($text)
   {
     global $dr_active_post;
     srand($dr_active_post);
@@ -27,24 +34,62 @@ if (!function_exists('dr_parse'))
       $text = implode("\0", $outside);
     }
 
-    for($i = 0; $i < count($inside); $i++)
+    if (isset($inside))
     {
-      $exp = explode('d', $inside[$i]);
-      if (isset($exp)) 
-      {
-        $inside[$i] = '(' . $inside[$i] . ') : ';
-        $sum_result = 0;
-        $num_dices = $exp[0];
-        for ($j = 0; $j < $num_dices; $j++)
-        {
-          $dice_result = roll_dice($exp[1]);
-          $sum_result += $dice_result;
-          if ($j > 0)
-            $inside[$i] .= ' + ';
-          $inside[$i] .= $dice_result;
 
+      for($i = 0; $i < count($inside); $i++)
+      {
+
+        // Split in expressions
+        $expressions = dr_split_expression($inside[$i]);
+        $inside[$i] = '(' . $inside[$i] . ') : ';
+
+        if (isset($expressions))
+        {
+
+          $to_eval = '';
+
+          foreach ($expressions as $key => $expression)
+          {
+            $tmp_result = dr_parse_expression($expression);
+            $inside[$i] .= $tmp_result;
+            $to_eval .= $tmp_result;
+          }
+
+          // We must convert some simbols for evalue them
+          $to_eval = str_replace (
+                                   array("&gt;",  "&lt;"),
+                                   array(">", "<"),
+                                   $to_eval);
+
+          // We can only have one operator of any type
+          if ((substr_count ($to_eval, '<=') > 1) or
+              (substr_count ($to_eval, '>=') > 1) or
+              (substr_count ($to_eval, '<') > 1) or
+              (substr_count ($to_eval, '>') > 1) or
+              (substr_count ($to_eval, '=') > 1))
+          {
+            $inside[$i] .= " : " . DR_INVALID_EXPRESSION;
+          }
+          else
+          // Evaluate result
+          if ((strpos($to_eval, '<') !== false) or
+              (strpos($to_eval, '>') !== false) or
+              (strpos($to_eval, '=') !== false))
+          {
+            $to_eval = "\$inside[\$i] .= \" : \" . ((" . $to_eval . ") === true ? \"" . DR_TRUE_STRING ."\" : \"" . DR_FALSE_STRING . "\");";
+            echo eval($to_eval);
+          }
+          else
+          {
+            $to_eval = "\$inside[\$i] .= \" = \" . (" . $to_eval . ");";
+            eval($to_eval);
+          }
         }
-        $inside[$i] .= ' = ' . $sum_result;
+        else
+        {
+          $inside[$i] .= DR_INVALID_EXPRESSION;
+        }
       }
     }
 
@@ -60,14 +105,97 @@ if (!function_exists('dr_parse'))
       {
         $text .= $outside[$i];
         if (isset($inside[$i]))
-          $text .= '[dice]'.$inside[$i].'[/dice]';
+          $text .= '[dice]'. $inside[$i] . '[/dice]';
       }
     }
 
     return $text;
-    
+
   }
 }
+
+if (!function_exists('dr_split_expression'))
+{
+  /**
+   * This functions split $text in chunk of operators and expressions
+   */
+  function dr_split_expression($text)
+  {
+    $result = array ();
+    $string = $text;
+    $op_position = false;
+    $operator = '';
+    do
+    {
+      $op_position = strpos($string, '&gt;=');
+      if ($op_position !== false)
+        $operator = '&gt;=';
+      else
+      {
+        $op_position = strpos($string, '&lt;=');
+        if ($op_position !== false)
+          $operator = '&lt;=';
+        else
+        {
+          $op_position = strpos($string, '=');
+          if ($op_position !== false)
+            $operator = '=';
+            else
+          {
+            $op_position = strpos($string, '&gt;');
+            if ($op_position !== false)
+              $operator = '&gt;';
+            else
+            {
+              $op_position = strpos($string, '&lt;');
+              if ($op_position !== false)
+                $operator = '&lt;';
+            }
+          }
+        }
+      }
+      if ($op_position !== false)
+      {
+        $result[] = substr($string, 0, $op_position);
+        $result[] = $operator;
+        $string = substr($string, strlen($result[count($result) - 2]) +  strlen($operator));
+      }
+      else
+      {
+        $result[] = $string;
+      }
+    }
+    while ($op_position !== false);
+    return $result;
+  }
+}
+
+if (!function_exists('dr_parse_expression'))
+{
+  function dr_parse_expression($expression) {
+    $result = $expression;
+    if (strpos ($expression, 'd') !== false)
+    {
+      $result = '';
+      $throw = explode('d', $expression);
+      if (isset($throw))
+      {
+        $sum_result = 0;
+        $num_dices = $throw[0];
+        for ($j = 0; $j < $num_dices; $j++)
+        {
+          $dice_result = roll_dice((int)$throw[1]);
+          $sum_result += $dice_result;
+          if ($j > 0)
+            $result .= ' + ';
+          $result .= $dice_result;
+        }
+      }
+    }
+    return $result;
+  }
+}
+
 
 if (!function_exists('roll_dice'))
 {
