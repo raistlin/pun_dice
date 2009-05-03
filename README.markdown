@@ -1,15 +1,11 @@
 Introduction
 ============
 
-Extension for PunBB forums to allow dice rolls for users.
+Extension for PunBB forums to allow dice rolls expressions for users.
 
 
 Install
 =======
-*************
-Important if you are updating, you should uninstall first any old 
-version of this extension.
-*************
 
 Go to your PunBB directory:
 
@@ -23,8 +19,15 @@ Usage
 =====
 
     [dice]3d5[/dice] -> Rolled (3d5) : 2 + 4 + 1 = 7
+    [dice]3d6+3[/dice] -> Rolled (3d5) : 1 + 3 + 4 + 3 = 11
+    [dice]3d6+3>10[/dice] -> Rolled (3d5) : 1 + 3 + 4 + 3 > 10 : SUCCESS
+    [dice]3d6+3<10[/dice] -> Rolled (3d5) : 1 + 3 + 4 + 3 < 10 : FAIL
 
 
 Thanks to
 =========
-    Cebollinos
+    Cebollinos from http://www.rolgratis.com/gyg/foros
+    Meroka     from http://www.rolgratis.com/gyg/foros
+    PunBB Development team
+    All users of this extension
+
