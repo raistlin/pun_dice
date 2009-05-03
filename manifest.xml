@@ -28,38 +28,46 @@
 	<uninstall></uninstall>
 	<hooks>
 		<hook id="co_common"><![CDATA[
-                // We need to include early the functions
-		include $ext_info['path'].'/functions.php';
+			$pun_extensions_used = array_merge(isset($pun_extensions_used) ? $pun_extensions_used : array(), array($ext_info['id']));
 
-		// Sets global active post
-		$dr_active_post = 0;
+			// Include language files
+			if (file_exists($ext_info['path'].'/lang/'.$forum_user['language'].'/'.$ext_info['id'].'.php'))
+				include_once $ext_info['path'].'/lang/'.$forum_user['language'].'/'.$ext_info['id'].'.php';
+			else
+				include_once $ext_info['path'].'/lang/English/'.$ext_info['id'].'.php';
+
+			// We need to include early the functions
+			include $ext_info['path'].'/functions.php';
+
+			// Sets global active post
+			$dr_active_post = 0;
 
 		]]></hook>
 		<hook id="ed_main_output_start"><![CDATA[
 
-		global $dr_active_post;
-		$dr_active_post = $id;
+			global $dr_active_post;
+			$dr_active_post = $id;
 		]]></hook>
 		<hook id="vt_post_loop_start, po_topic_review_pre_item_indent_merge"><![CDATA[
 
-		global $dr_active_post;
-		$dr_active_post = $cur_post['id'];
+			global $dr_active_post;
+			$dr_active_post = $cur_post['id'];
 		]]></hook>
 		<hook id="ps_preparse_tags_start"><![CDATA[
-		$tags[] = 'dice';
-		$tags_opened[] = 'dice';
-		$tags_closed[] = 'dice';
-		$tags_inline[] = 'dice';
-		$tags_limit_bbcode['*'][] = 'dice';
-		$tags_limit_bbcode['url'][] = 'dice';
-		$tags_limit_bbcode['email'][] = 'dice';
+			$tags[] = 'dice';
+			$tags_opened[] = 'dice';
+			$tags_closed[] = 'dice';
+			$tags_inline[] = 'dice';
+			$tags_limit_bbcode['*'][] = 'dice';
+			$tags_limit_bbcode['url'][] = 'dice';
+			$tags_limit_bbcode['email'][] = 'dice';
 		]]></hook>
 		<hook id="ps_do_bbcode_replace"><![CDATA[
 
-		$pattern[] = '#\[dice\](.*?)\[/dice\]#ms';
-		$replace[] = '<strong><!--PUN_DICE 0.3-->$1<!--PUN_DICE 0.3--></strong>';
+			$pattern[] = '#\[dice\](.*?)\[/dice\]#ms';
+			$replace[] = '<strong><!--PUN_DICE 0.3-->$1<!--PUN_DICE 0.3--></strong>';
 
-		$text = dr_parse($text);
+			$text = dr_parse($text);
 		]]></hook>
 	<hooks>
 </extension>

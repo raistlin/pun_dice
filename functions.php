@@ -15,11 +15,6 @@
 
 if (!defined('FORUM')) die();
 
-define('DR_FALSE_STRING', ' Falso! ');
-define('DR_TRUE_STRING', ' Cierto! ');
-define('DR_INVALID', ' Expresi&oacute;n no v&aacute;lida ');
-define('DR_INVALID_EXPRESSION', ' Expresi&oacute;n no v&aacute;lida ');
-
 if (!function_exists('dr_parse'))
 {
   function dr_parse($text)
