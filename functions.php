@@ -78,7 +78,7 @@ if (!function_exists('dr_parse'))
               (strpos($to_eval, '=') !== false))
           {
             $to_eval = "\$inside[\$i] .= \" : \" . ((" . $to_eval . ") === true ? \"" . DR_TRUE_STRING ."\" : \"" . DR_FALSE_STRING . "\");";
-            echo eval($to_eval);
+            eval($to_eval);
           }
           else
           {
@@ -130,30 +130,43 @@ if (!function_exists('dr_split_expression'))
       $op_position = strpos($string, '&gt;=');
       if ($op_position !== false)
         $operator = '&gt;=';
-      else
+
+      if ((strpos($string, '&lt;=') !== false) and (($op_position === false) or ($op_position > strpos($string, '&lt;='))))
       {
         $op_position = strpos($string, '&lt;=');
-        if ($op_position !== false)
-          $operator = '&lt;=';
-        else
-        {
-          $op_position = strpos($string, '=');
-          if ($op_position !== false)
-            $operator = '=';
-            else
-          {
-            $op_position = strpos($string, '&gt;');
-            if ($op_position !== false)
-              $operator = '&gt;';
-            else
-            {
-              $op_position = strpos($string, '&lt;');
-              if ($op_position !== false)
-                $operator = '&lt;';
-            }
-          }
-        }
+        $operator = '&lt;=';
       }
+
+      if ((strpos($string, '=') !== false) and (($op_position === false) or ($op_position > strpos($string, '='))))
+      {
+        $op_position = strpos($string, '=');
+        $operator = '=';
+      }
+
+      if ((strpos($string, '&gt;') !== false) and (($op_position === false) or ($op_position > strpos($string, '&gt;'))))
+      {
+        $op_position = strpos($string, '&gt;');
+        $operator = '&gt;';
+      }
+
+      if ((strpos($string, '&lt;') !== false) and (($op_position === false) or ($op_position > strpos($string, '&lt;'))))
+      {
+        $op_position = strpos($string, '&lt;');
+        $operator = '&lt;';
+      }
+
+      if ((strpos($string, '+') !== false) and (($op_position === false) or ($op_position > strpos($string, '+'))))
+      {
+        $op_position = strpos($string, '+');
+        $operator = '+';
+      }
+
+      if ((strpos($string, '-') !== false) and (($op_position === false) or ($op_position > strpos($string, '-'))))
+      {
+        $op_position = strpos($string, '-');
+        $operator = '-';
+      }
+
       if ($op_position !== false)
       {
         $result[] = substr($string, 0, $op_position);
