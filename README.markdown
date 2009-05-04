@@ -10,7 +10,7 @@ Install
 Go to your PunBB directory:
 
     cd extensions
-    git clone git://github.com/gfoyle/pun_dice.git
+    git clone git://github.com/raistlin/pun_dice.git
 
 Log in as admin in PunBB, go to Extensions, install Extension.
 
