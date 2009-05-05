@@ -43,8 +43,9 @@ if (!function_exists('dr_parse'))
 
       if (isset($inside))
       {
+        $num_tokens = count ($inside);
 
-        for($i = 0; $i < count($inside); $i++)
+        for($i = 0; $i < $num_tokens; $i++)
         {
 
           // Split in expressions
@@ -60,7 +61,7 @@ if (!function_exists('dr_parse'))
             {
               $tmp_result = dr_parse_expression($expression);
               $inside[$i] .= $tmp_result;
-echo "--$inside[$i]";
+
               $to_eval .= $tmp_result;
             }
 
@@ -77,7 +78,6 @@ echo "--$inside[$i]";
                 (substr_count ($to_eval, '>') > 1) or
                 (substr_count ($to_eval, '=') > 1))
             {
-echo "..1";
             $inside[$i] .= " : " . DR_INVALID_EXPRESSION;
             }
             else
@@ -86,22 +86,24 @@ echo "..1";
                 (strpos($to_eval, '>') !== false) or
                 (strpos($to_eval, '=') !== false))
             {
-echo "..2";
-              $to_eval = "\$inside[\$i] .= \" : \" . ((" . $to_eval . ") === true ? \"" . DR_TRUE_STRING ."\" : \"" . DR_FALSE_STRING . "\");";
-echo $to_eval;
+              $tmp_res = '';
+              $to_eval = "\$tmp_res .= \" : \" . ((" . $to_eval . ") === true ? \"" . DR_TRUE_STRING ."\" : \"" . DR_FALSE_STRING . "\");";
               eval($to_eval);
+              $inside[$i] .= $tmp_res;
+              echo 'ss' . $inside[$i] . 'ss';
             }
             else
             {
-echo "..3";
               $to_eval = "\$inside[\$i] .= \" = \" . (" . $to_eval . ");";
               eval($to_eval);
             }
+              echo 'ss' . $inside[$i] . 'ss';
           }
           else
           {
             $inside[$i] .= DR_INVALID_EXPRESSION;
           }
+              echo 'ss' . $inside[$i] . 'ss';
         }
       }
 
