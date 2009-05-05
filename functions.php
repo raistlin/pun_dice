@@ -17,94 +17,128 @@ if (!defined('FORUM')) die();
 
 if (!function_exists('dr_parse'))
 {
-  function dr_parse($text)
+  function dr_parse($input_text)
   {
     global $dr_active_post;
     srand($dr_active_post);
 
-    // If the message contains a dice tag we have to split it up (text within [dice][/dice] shouldn't be touched)
-    if (strpos($text, '[dice]') !== false && strpos($text, '[/dice]') !== false)
+    // If the message contains a code tag we have to split it up (text within [code][/code] shouldn't be touched)
+    if (strpos($input_text, '[code]') !== false && strpos($input_text, '[/code]') !== false)
     {
-      list($inside, $outside) = split_text($text, '[dice]', '[/dice]', $errors);
-      $text = implode("\0", $outside);
+      list($inside_code, $outside_code) = split_text($input_text, '[code]', '[/code]', $errors);
+      $input_text = implode("\0", $outside_code);
+    }
+    else
+    {
+      $outside_code = array ($input_text);
     }
 
-    if (isset($inside))
+    foreach($outside_code as $key => $text)
     {
+      // If the message contains a dice tag we have to split it up (text within [dice][/dice] shouldn't be touched)
+      if (strpos($text, '[dice]') !== false && strpos($text, '[/dice]') !== false)
+      {
+        list($inside, $outside) = split_text($text, '[dice]', '[/dice]', $errors);
+      }
 
-      for($i = 0; $i < count($inside); $i++)
+      if (isset($inside))
       {
 
-        // Split in expressions
-        $expressions = dr_split_expression($inside[$i]);
-        $inside[$i] = '(' . $inside[$i] . ') : ';
-
-        if (isset($expressions))
+        for($i = 0; $i < count($inside); $i++)
         {
 
-          $to_eval = '';
+          // Split in expressions
+          $expressions = dr_split_expression($inside[$i]);
+          $inside[$i] = '(' . $inside[$i] . ') : ';
 
-          foreach ($expressions as $key => $expression)
+          if (isset($expressions))
           {
-            $tmp_result = dr_parse_expression($expression);
-            $inside[$i] .= $tmp_result;
-            $to_eval .= $tmp_result;
-          }
 
-          // We must convert some simbols for evalue them
-          $to_eval = str_replace (
-                                   array("&gt;",  "&lt;"),
-                                   array(">", "<"),
-                                   $to_eval);
+            $to_eval = '';
 
-          // We can only have one operator of any type
-          if ((substr_count ($to_eval, '<=') > 1) or
-              (substr_count ($to_eval, '>=') > 1) or
-              (substr_count ($to_eval, '<') > 1) or
-              (substr_count ($to_eval, '>') > 1) or
-              (substr_count ($to_eval, '=') > 1))
-          {
+            foreach ($expressions as $key => $expression)
+            {
+              $tmp_result = dr_parse_expression($expression);
+              $inside[$i] .= $tmp_result;
+echo "--$inside[$i]";
+              $to_eval .= $tmp_result;
+            }
+
+            // We must convert some simbols for evalue them
+            $to_eval = str_replace (
+                                     array("&gt;",  "&lt;"),
+                                     array(">", "<"),
+                                     $to_eval);
+
+            // We can only have one operator of any type
+            if ((substr_count ($to_eval, '<=') > 1) or
+                (substr_count ($to_eval, '>=') > 1) or
+                (substr_count ($to_eval, '<') > 1) or
+                (substr_count ($to_eval, '>') > 1) or
+                (substr_count ($to_eval, '=') > 1))
+            {
+echo "..1";
             $inside[$i] .= " : " . DR_INVALID_EXPRESSION;
+            }
+            else
+            // Evaluate result
+            if ((strpos($to_eval, '<') !== false) or
+                (strpos($to_eval, '>') !== false) or
+                (strpos($to_eval, '=') !== false))
+            {
+echo "..2";
+              $to_eval = "\$inside[\$i] .= \" : \" . ((" . $to_eval . ") === true ? \"" . DR_TRUE_STRING ."\" : \"" . DR_FALSE_STRING . "\");";
+echo $to_eval;
+              eval($to_eval);
+            }
+            else
+            {
+echo "..3";
+              $to_eval = "\$inside[\$i] .= \" = \" . (" . $to_eval . ");";
+              eval($to_eval);
+            }
           }
           else
-          // Evaluate result
-          if ((strpos($to_eval, '<') !== false) or
-              (strpos($to_eval, '>') !== false) or
-              (strpos($to_eval, '=') !== false))
           {
-            $to_eval = "\$inside[\$i] .= \" : \" . ((" . $to_eval . ") === true ? \"" . DR_TRUE_STRING ."\" : \"" . DR_FALSE_STRING . "\");";
-            eval($to_eval);
+            $inside[$i] .= DR_INVALID_EXPRESSION;
           }
-          else
-          {
-            $to_eval = "\$inside[\$i] .= \" = \" . (" . $to_eval . ");";
-            eval($to_eval);
-          }
-        }
-        else
-        {
-          $inside[$i] .= DR_INVALID_EXPRESSION;
         }
       }
+
+      // If we split up the message before we have to concatenate it together again (dice tags)
+      if (isset($inside))
+      {
+        //$outside = explode("\0", $text);
+        $text = '';
+
+        $num_tokens = count($outside);
+
+        for ($i = 0; $i < $num_tokens; ++$i)
+        {
+          $text .= $outside[$i];
+          if (isset($inside[$i]))
+            $text .= '[dice]'. $inside[$i] . '[/dice]';
+        }
+      }
+      $outside_code[$key] = $text;
     }
 
-    // If we split up the message before we have to concatenate it together again (dice tags)
-    if (isset($inside))
+    // If we split up the message before we have to concatenate it together again (code tags)
+    if (isset($inside_code))
     {
-      $outside = explode("\0", $text);
-      $text = '';
+      $outside_code = explode("\0", $input_text);
+      $input_text = '';
 
-      $num_tokens = count($outside);
+      $num_tokens = count($outside_code);
 
       for ($i = 0; $i < $num_tokens; ++$i)
       {
-        $text .= $outside[$i];
-        if (isset($inside[$i]))
-          $text .= '[dice]'. $inside[$i] . '[/dice]';
+        $input_text .= $outside_code[$i];
+        if (isset($inside_code[$i]))
+          $input_text .= '[code]'. $inside_code[$i] . '[/code]';
       }
     }
-
-    return $text;
+    return $input_text;
 
   }
 }

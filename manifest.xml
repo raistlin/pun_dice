@@ -65,7 +65,7 @@
 		<hook id="ps_do_bbcode_replace"><![CDATA[
 
 			$pattern[] = '#\[dice\](.*?)\[/dice\]#ms';
-			$replace[] = '<strong><!--PUN_DICE 0.3-->$1<!--PUN_DICE 0.3--></strong>';
+			$replace[] = '<strong><!--' .$ext_info['id'] . '-->$1<!--' .$ext_info['id'] . '--></strong>';
 
 			$text = dr_parse($text);
 		]]></hook>
