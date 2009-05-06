@@ -65,6 +65,7 @@
 		]]></hook>
 		<hook id="ps_do_bbcode_replace"><![CDATA[
 
+      // Prepare replacement
 			$pattern[] = '#\[dice\](.*?)\[/dice\]#ms';
 			$replace[] = '<strong><!--' .$ext_info['id'] . '-->$1<!--' .$ext_info['id'] . '--></strong>';
 
