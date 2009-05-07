@@ -10,6 +10,8 @@
  * @package pun_dice
  *
  * Changelog
+ *  v0.3.2
+ *   Added support for quoting rolling dices
  *  v0.3 Added support for conditions checks
  *  v0.2 Fix include of functions file
  *  v0.1 Initial release
@@ -19,7 +21,7 @@
 <extension engine="1.0">
 	<id>pun_dice</id>
 	<title>Pun dice roller</title>
-	<version>0.3</version>
+	<version>0.3.2</version>
 	<description>Adds dice rolle feature for topics.</description>
 	<author>Raúl Ferriz Candela</author>
 	<minversion>1.3</minversion>
@@ -68,6 +70,18 @@
 			$replace[] = '<strong><!--' .$ext_info['id'] . '-->$1<!--' .$ext_info['id'] . '--></strong>';
 
 			$text = dr_parse($text);
+		]]></hook>
+		<hook id="po_modify_quote_info"><![CDATA[
+
+	    if (!defined('FORUM_PARSER_LOADED'))
+		    require FORUM_ROOT.'include/parser.php';
+
+      $pattern[] = '#\[dice\](.*?)\[/dice\]#ms';
+      $replace[] = '[b][i]Trusted roll ' .$ext_info['id'] . ' [/i] : $1 [/b]';
+
+			$dr_active_post = $qid;
+			$q_message = dr_parse($q_message);
+			$q_message = preg_replace($pattern, $replace, $q_message);
 		]]></hook>
 	<hooks>
 </extension>

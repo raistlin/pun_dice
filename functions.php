@@ -47,7 +47,19 @@ if (!function_exists('dr_parse'))
 
         for($i = 0; $i < $num_tokens; $i++)
         {
+
+          $is_quote = (stripos($inside[$i], '>') !== false) or (stripos($inside[$i], '<') !== false);
+          if ($is_quote)
+          {
+            // We must convert some simbols, only when when we come for quoting
+            $inside[$i] = str_replace (
+                                        array('>', '<'),
+                                        array('&gt;',  '&lt;'),
+                                        $inside[$i]);
+          }
+
           $tmp = $inside[$i];
+
           // Split in expressions
           $expressions = dr_split_expression($tmp);
           $inside[$i] = '(' . $inside[$i] . ') : ';
@@ -100,6 +112,15 @@ if (!function_exists('dr_parse'))
           else
           {
             $inside[$i] .= DR_INVALID_EXPRESSION;
+          }
+
+          if ($is_quote)
+          {
+            // We must restore some simbols, only when when we come for quoting
+            $inside[$i] = str_replace (
+                                        array('&gt;',  '&lt;'),
+                                        array('>', '<'),
+                                        $inside[$i]);
           }
         }
       }
