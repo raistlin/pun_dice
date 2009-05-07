@@ -10,17 +10,22 @@
  * @package pun_dice
  *
  * Changelog
- *  v0.3 Added support for conditions checks
- *  v0.2 Fix include of functions file
- *  v0.1 Initial release
+ *  v0.3.1
+ *	Fixed bug with interaction agains bbcode [code][/code]
+ *  v0.3
+ *	Added support for conditions checks
+ *  v0.2
+ *	Fix include of functions file
+ *  v0.1
+ *	Initial release
  */
 -->
 
 <extension engine="1.0">
 	<id>pun_dice</id>
 	<title>Pun dice roller</title>
-	<version>0.3</version>
-	<description>Adds dice rolle feature for topics.</description>
+	<version>0.3.1</version>
+	<description>Adds dice roll checks for user topics.</description>
 	<author>Raúl Ferriz Candela</author>
 	<minversion>1.3</minversion>
 	<maxtestedon>1.3.3</maxtestedon>

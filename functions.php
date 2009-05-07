@@ -3,21 +3,23 @@
 /**
  * PunBB Dice Roller extension functions file
  *
- * @copyright Copyright (C) 2009 Raul Ferriz
+ * @copyright (C) 2009 Raul Ferriz
  * @license http://www.gnu.org/licenses/gpl.html GPL version 3
  * @package pun_dice
  *
  * Changelog:
- *  v0.1 Initial release
+ *  v0.3.1
+ *	Fixed bug with interaction agains bbcode [code][/code]
  *  v0.3 Added conditions
  *       First steps in multilanguage support
+ *  v0.1 Initial release
  */
 
 if (!defined('FORUM')) die();
 
 if (!function_exists('dr_parse'))
 {
-  function dr_parse($input_text)
+  function dr_parse($input_text, $is_quote = false)
   {
     global $dr_active_post;
     srand($dr_active_post);
@@ -86,15 +88,11 @@ if (!function_exists('dr_parse'))
                 (strpos($to_eval, '>') !== false) or
                 (strpos($to_eval, '=') !== false))
             {
-              $tmp_res = '';
-              $to_eval = '$tmp_res .= " : " . ((' . $to_eval . ') === true ? "' . DR_TRUE_STRING . '" : "' . DR_FALSE_STRING . '");';
-              eval($to_eval);
-              $inside[$i] .= $tmp_res;
+              eval('$inside[$i] .= " : " . ((' . $to_eval . ') === true ? DR_TRUE_STRING : DR_FALSE_STRING );');
             }
             else
             {
-              $to_eval = "\$inside[\$i] .= \" = \" . (" . $to_eval . ");";
-              eval($to_eval);
+              eval('$inside[$i] .= " = " . (' . $to_eval . ');');
             }
           }
           else
