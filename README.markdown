@@ -4,6 +4,11 @@ Introduction
 Extension for PunBB forums to allow dice rolls expressions for users.
 
 
+Requeriments
+===
+
+PunBB version > 1.3.3 (needs to have the hook 'po_modify_quote_info')
+
 Install
 =======
 
