@@ -60,10 +60,8 @@ if (!function_exists('dr_parse'))
                                         $inside[$i]);
           }
 
-          $tmp = $inside[$i];
-
           // Split in expressions
-          $expressions = dr_split_expression($tmp);
+          $expressions = dr_split_expression($inside[$i]);
           $inside[$i] = '(' . $inside[$i] . ') : ';
 
           if (isset($expressions))
@@ -75,13 +73,11 @@ if (!function_exists('dr_parse'))
             {
               $tmp_result = dr_parse_expression($expression);
               $inside[$i] .= $tmp_result;
-
               $to_eval .= $tmp_result;
             }
 
             // We must convert some simbols for evalue them
-            $to_eval = str_replace (
-                                     array("&gt;",  "&lt;"),
+            $to_eval = str_replace ( array("&gt;",  "&lt;"),
                                      array(">", "<"),
                                      $to_eval);
 
@@ -92,7 +88,7 @@ if (!function_exists('dr_parse'))
                 (substr_count ($to_eval, '>') > 1) or
                 (substr_count ($to_eval, '=') > 1))
             {
-            $inside[$i] .= " : " . DR_INVALID_EXPRESSION;
+              $inside[$i] .= " : " . DR_INVALID_EXPRESSION;
             }
             else
             // Evaluate result
@@ -127,7 +123,6 @@ if (!function_exists('dr_parse'))
       if (isset($inside))
       {
         $text = '';
-
         $num_tokens = count($outside);
 
         for ($j = 0; $j < $num_tokens; $j++)

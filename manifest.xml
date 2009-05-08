@@ -35,6 +35,7 @@
 	<uninstall></uninstall>
 	<hooks>
 		<hook id="co_common"><![CDATA[
+      // Add this extension to the sting of used extensions
 			$pun_extensions_used = array_merge(isset($pun_extensions_used) ? $pun_extensions_used : array(), array($ext_info['id']));
 
 			// Include language files
@@ -71,6 +72,7 @@
 		]]></hook>
 		<hook id="ps_do_bbcode_replace"><![CDATA[
 
+      // Prepare replacement
 			$pattern[] = '#\[dice\](.*?)\[/dice\]#ms';
 			$replace[] = '<strong><!--' .$ext_info['id'] . '-->$1<!--' .$ext_info['id'] . '--></strong>';
 
