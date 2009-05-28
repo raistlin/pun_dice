@@ -91,16 +91,18 @@ if (!function_exists('dr_parse'))
               $inside[$i] .= " : " . DR_INVALID_EXPRESSION;
             }
             else
-            // Evaluate result
-            if ((strpos($to_eval, '<') !== false) or
-                (strpos($to_eval, '>') !== false) or
-                (strpos($to_eval, '=') !== false))
             {
-              eval('$inside[$i] .= " : " . ((' . $to_eval . ') === true ? DR_TRUE_STRING : DR_FALSE_STRING );');
-            }
-            else
-            {
-              eval('$inside[$i] .= " = " . (' . $to_eval . ');');
+              // Evaluate the result
+              if ((strpos($to_eval, '<') !== false) or
+                  (strpos($to_eval, '>') !== false) or
+                  (strpos($to_eval, '=') !== false))
+              {
+                eval('$inside[$i] .= " : " . ((' . $to_eval . ') === true ? DR_TRUE_STRING : DR_FALSE_STRING );');
+              }
+              else
+              {
+                eval('$inside[$i] .= " = " . (' . $to_eval . ');');
+              }
             }
           }
           else
@@ -242,7 +244,7 @@ if (!function_exists('dr_parse_expression'))
         $num_dices = $throw[0];
         for ($j = 0; $j < $num_dices; $j++)
         {
-          $dice_result = roll_dice((int)$throw[1]);
+          $dice_result = dr_roll_dice((int)$throw[1]);
           $sum_result += $dice_result;
           if ($j > 0)
             $result .= ' + ';
@@ -255,9 +257,9 @@ if (!function_exists('dr_parse_expression'))
 }
 
 
-if (!function_exists('roll_dice'))
+if (!function_exists('dr_roll_dice'))
 {
-  function roll_dice($faces) {
+  function dr_roll_dice($faces) {
     return rand(1, $faces);
   }
 }
