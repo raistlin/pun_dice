@@ -168,6 +168,19 @@ if (!function_exists('dr_parse'))
 if (!function_exists('dr_split_expression'))
 {
   /**
+   * Helper
+   */
+  function dr_search_tag($string, $tag, &$tag_position, &$founded)
+  {
+      if ((strpos($string, $tag) !== false) and (($op_position === false) or ($op_position > strpos($string, $tag))))
+      {
+        $op_position = strpos($string, $tag);
+        $founded = $tag;
+      }
+
+  }
+
+  /**
    * This functions split $text in chunk of operators and expressions
    */
   function dr_split_expression($text)
@@ -178,57 +191,18 @@ if (!function_exists('dr_split_expression'))
     $operator = '';
     do
     {
-      $op_position = strpos($string, '&gt;=');
-      if ($op_position !== false)
-        $operator = '&gt;=';
+      $op_position = false;
+      $operator = '';
 
-      if ((strpos($string, '&lt;=') !== false) and (($op_position === false) or ($op_position > strpos($string, '&lt;='))))
-      {
-        $op_position = strpos($string, '&lt;=');
-        $operator = '&lt;=';
-      }
-
-      if ((strpos($string, '=') !== false) and (($op_position === false) or ($op_position > strpos($string, '='))))
-      {
-        $op_position = strpos($string, '=');
-        $operator = '=';
-      }
-
-      if ((strpos($string, '&gt;') !== false) and (($op_position === false) or ($op_position > strpos($string, '&gt;'))))
-      {
-        $op_position = strpos($string, '&gt;');
-        $operator = '&gt;';
-      }
-
-      if ((strpos($string, '&lt;') !== false) and (($op_position === false) or ($op_position > strpos($string, '&lt;'))))
-      {
-        $op_position = strpos($string, '&lt;');
-        $operator = '&lt;';
-      }
-
-      if ((strpos($string, '+') !== false) and (($op_position === false) or ($op_position > strpos($string, '+'))))
-      {
-        $op_position = strpos($string, '+');
-        $operator = '+';
-      }
-
-      if ((strpos($string, '-') !== false) and (($op_position === false) or ($op_position > strpos($string, '-'))))
-      {
-        $op_position = strpos($string, '-');
-        $operator = '-';
-      }
-
-      if ((strpos($string, '(') !== false) and (($op_position === false) or ($op_position > strpos($string, '('))))
-      {
-        $op_position = strpos($string, '(');
-        $operator = '(';
-      }
-
-      if ((strpos($string, ')') !== false) and (($op_position === false) or ($op_position > strpos($string, ')'))))
-      {
-        $op_position = strpos($string, ')');
-        $operator = ')';
-      }
+      dr_search_tag($string, '&gt;=', $op_position, $operator);
+      dr_search_tag($string, '&lt;=', $op_position, $operator);
+      dr_search_tag($string, '=', $op_position, $operator);
+      dr_search_tag($string, '&gt;', $op_position, $operator);
+      dr_search_tag($string, '&lt;', $op_position, $operator);
+      dr_search_tag($string, '+', $op_position, $operator);
+      dr_search_tag($string, '-', $op_position, $operator);
+      dr_search_tag($string, '(', $op_position, $operator);
+      dr_search_tag($string, ')', $op_position, $operator);
 
       if ($op_position !== false)
       {
