@@ -8,8 +8,12 @@
  * @package pun_dice
  *
  * Changelog:
+ *  v0.3.3
+ *	      Added support for parentesis
+ *  v0.3.2
+ *       Added support for quoting rolling dices
  *  v0.3.1
- *	Fixed bug with interaction agains bbcode [code][/code]
+ *	      Fixed bug with interaction agains bbcode [code][/code]
  *  v0.3 Added conditions
  *       First steps in multilanguage support
  *  v0.1 Initial release
@@ -212,6 +216,18 @@ if (!function_exists('dr_split_expression'))
       {
         $op_position = strpos($string, '-');
         $operator = '-';
+      }
+
+      if ((strpos($string, '(') !== false) and (($op_position === false) or ($op_position > strpos($string, '('))))
+      {
+        $op_position = strpos($string, '(');
+        $operator = '(';
+      }
+
+      if ((strpos($string, ')') !== false) and (($op_position === false) or ($op_position > strpos($string, ')'))))
+      {
+        $op_position = strpos($string, ')');
+        $operator = ')';
       }
 
       if ($op_position !== false)
