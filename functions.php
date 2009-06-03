@@ -8,6 +8,8 @@
  * @package pun_dice
  *
  * Changelog:
+ *  v0.3.4
+ *	      Added support for multiplication and division
  *  v0.3.3
  *	      Added support for parentesis
  *  v0.3.2
@@ -199,6 +201,8 @@ if (!function_exists('dr_split_expression'))
       dr_search_tag($string, '=',     $op_position, $operator);
       dr_search_tag($string, '&gt;', $op_position, $operator);
       dr_search_tag($string, '&lt;', $op_position, $operator);
+      dr_search_tag($string, '*', $op_position, $operator);
+      dr_search_tag($string, '/', $op_position, $operator);
       dr_search_tag($string, '+', $op_position, $operator);
       dr_search_tag($string, '-', $op_position, $operator);
       dr_search_tag($string, '(', $op_position, $operator);
