@@ -168,16 +168,16 @@ if (!function_exists('dr_parse'))
 if (!function_exists('dr_split_expression'))
 {
   /**
-   * Helper
+   * Helper function, search $tag in $string, set $tag_position and $founded only if matching new $tag 
+   * position is lesser than existing $tag_position
    */
   function dr_search_tag($string, $tag, &$tag_position, &$founded)
   {
-      if ((strpos($string, $tag) !== false) and (($op_position === false) or ($op_position > strpos($string, $tag))))
-      {
-        $op_position = strpos($string, $tag);
-        $founded = $tag;
-      }
-
+    if ((strpos($string, $tag) !== false) and (($tag_position === false) or ($tag_position > strpos($string, $tag))))
+    {
+      $tag_position = strpos($string, $tag);
+      $founded = $tag;
+    }
   }
 
   /**
@@ -196,7 +196,7 @@ if (!function_exists('dr_split_expression'))
 
       dr_search_tag($string, '&gt;=', $op_position, $operator);
       dr_search_tag($string, '&lt;=', $op_position, $operator);
-      dr_search_tag($string, '=', $op_position, $operator);
+      dr_search_tag($string, '=',     $op_position, $operator);
       dr_search_tag($string, '&gt;', $op_position, $operator);
       dr_search_tag($string, '&lt;', $op_position, $operator);
       dr_search_tag($string, '+', $op_position, $operator);
