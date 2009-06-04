@@ -10,6 +10,8 @@
  * @package pun_dice
  *
  * Changelog
+ *  v0.4
+ *	      Added support for objecttive dice (do)
  *  v0.3.3
  *   Added support for parentesis
  *  v0.3.2
@@ -29,7 +31,7 @@
 	<id>pun_dice</id>
 	<title>Pun dice roller</title>
 	<version>0.3.3</version>
-	<description>Adds dice rolle feature for topics.</description>
+	<description>Adds dice rolle feature for topics.<br/>*Supports objective dice, parentesis ..</description>
 	<author>Raúl Ferriz Candela</author>
 	<minversion>1.3</minversion>
 	<maxtestedon>1.3.4</maxtestedon>

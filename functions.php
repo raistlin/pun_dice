@@ -8,6 +8,8 @@
  * @package pun_dice
  *
  * Changelog:
+ *  v0.4
+ *	      Added support for objecttive dice (do)
  *  v0.3.4
  *	      Added support for multiplication and division
  *  v0.3.3
@@ -147,7 +149,7 @@ if (!function_exists('dr_parse'))
     if (isset($inside_code))
     {
       $outside_code = explode("\0", $input_text);
-      $input_text = '';
+      $input_text = '';	
 
       $num_tokens = count($outside_code);
 
