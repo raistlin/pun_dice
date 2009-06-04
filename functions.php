@@ -58,19 +58,21 @@ if (!function_exists('dr_parse'))
         for($i = 0; $i < $num_tokens; $i++)
         {
 
-          $is_quote = (stripos($inside[$i], '>') !== false) or (stripos($inside[$i], '<') !== false);
+          $block = $inside[$i];
+
+          $is_quote = (stripos($block, '>') !== false) or (stripos($block, '<') !== false);
           if ($is_quote)
           {
             // We must convert some simbols, only when when we come for quoting
-            $inside[$i] = str_replace (
+            $block = str_replace (
                                         array('>', '<'),
                                         array('&gt;',  '&lt;'),
-                                        $inside[$i]);
+                                        $block);
           }
 
           // Split in expressions
-          $expressions = dr_split_expression($inside[$i]);
-          $inside[$i] = '(' . $inside[$i] . ') : ';
+          $expressions = dr_split_expression($block);
+          $block = '(' . $block . ') : ';
 
           if (isset($expressions))
           {
@@ -80,7 +82,7 @@ if (!function_exists('dr_parse'))
             foreach ($expressions as $expression)
             {
               $tmp_result = dr_parse_expression($expression);
-              $inside[$i] .= $tmp_result;
+              $block .= $tmp_result;
               $to_eval .= $tmp_result;
             }
 
@@ -96,7 +98,7 @@ if (!function_exists('dr_parse'))
                 (substr_count ($to_eval, '>') > 1) or
                 (substr_count ($to_eval, '=') > 1))
             {
-              $inside[$i] .= " : " . DR_INVALID_EXPRESSION;
+              $block .= " : " . DR_INVALID_EXPRESSION;
             }
             else
             {
@@ -105,27 +107,29 @@ if (!function_exists('dr_parse'))
                   (strpos($to_eval, '>') !== false) or
                   (strpos($to_eval, '=') !== false))
               {
-                eval('$inside[$i] .= " : " . ((' . $to_eval . ') === true ? DR_TRUE_STRING : DR_FALSE_STRING );');
+                eval('$block .= " : " . ((' . $to_eval . ') === true ? DR_TRUE_STRING : DR_FALSE_STRING );');
               }
               else
               {
-                eval('$inside[$i] .= " = " . (' . $to_eval . ');');
+                eval('$block .= " = " . (' . $to_eval . ');');
               }
             }
           }
           else
           {
-            $inside[$i] .= DR_INVALID_EXPRESSION;
+            $block .= DR_INVALID_EXPRESSION;
           }
 
           if ($is_quote)
           {
             // We must restore some simbols, only when when we come for quoting
-            $inside[$i] = str_replace (
+            $block = str_replace (
                                         array('&gt;',  '&lt;'),
                                         array('>', '<'),
-                                        $inside[$i]);
+                                        $block);
           }
+          
+          $inside[$i] = $preblock . $block;
         }
       }
 
