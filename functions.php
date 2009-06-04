@@ -227,11 +227,38 @@ if (!function_exists('dr_split_expression'))
 if (!function_exists('dr_parse_expression'))
 {
   function dr_parse_expression($expression) {
-    $result = $expression;
-    if (strpos ($expression, 'd') !== false)
+    $result_expression = $expression;
+    $result = $result_expression;
+    $result_expression = str_replace('do', 'o', $result_expression);
+
+    if (strpos ($result_expression, 'o') !== false)
     {
       $result = '';
-      $throw = explode('d', $expression);
+      $throw = explode('o', $result_expression);
+      if (isset($throw))
+      {
+        $results = array ();
+        $num_dices = $throw[0];
+        $j = 0;
+        $result .= '  /*'; 
+        for (; $j < $num_dices; $j++)
+        {
+          $results[] = dr_roll_dice((int)$throw[1]);
+          if ($j > 0)
+          	$result .= ', ';
+          $result .= $results[$j];
+        }
+        $result .= '*/  '; 
+        sort($results);
+        $result .= $results[(($j-1)/2)];
+      }
+      unset($throw);
+    }
+    else
+    if (strpos ($result_expression, 'd') !== false)
+    {
+      $result = '';
+      $throw = explode('d', $result_expression);
       if (isset($throw))
       {
         $sum_result = 0;
