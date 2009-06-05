@@ -46,9 +46,9 @@ if (!function_exists('dr_parse'))
     foreach($outside_code as $key => $text)
     {
       // If the message contains a dice tag we have to split it up (text within [dice][/dice] shouldn't be touched)
-      if (strpos($text, '[dice]') !== false && strpos($text, '[/dice]') !== false)
+      if (strpos($text, '[dice') !== false && strpos($text, '[/dice]') !== false)
       {
-        list($inside, $outside) = split_text($text, '[dice]', '[/dice]', $errors);
+        list($inside, $outside) = split_text($text, '[dice', '[/dice]', $errors);
       }
 
       if (isset($inside))
@@ -58,7 +58,28 @@ if (!function_exists('dr_parse'))
         for($i = 0; $i < $num_tokens; $i++)
         {
 
+          // Reset options
+          $allow_critics = false;
+          $dice_params = array();
+          
           $block = $inside[$i];
+          if (strpos($block, ']') !== false)
+          {
+            $params = substr ($block, 0, strpos($block, ']'));
+            $block = substr($block, strpos($block, ']') + 1);
+            
+            // Search for params 
+            if (strpos($params, '=') !== false)
+            {
+              // Clean params 
+              $params = preg_replace ('/(&quot;|"|\'|=|]| )?/', '', $params);
+              $dice_params = explode (',', $params);
+
+              // Search for options 
+              if (array_search ('critic', $dice_params) !== false)
+                $allow_critics = true;
+            }
+          }
 
           $is_quote = (stripos($block, '>') !== false) or (stripos($block, '<') !== false);
           if ($is_quote)
@@ -123,13 +144,21 @@ if (!function_exists('dr_parse'))
           if ($is_quote)
           {
             // We must restore some simbols, only when when we come for quoting
-            $block = str_replace (
-                                        array('&gt;',  '&lt;'),
-                                        array('>', '<'),
-                                        $block);
+            $block = str_replace ( array('&gt;',  '&lt;'),
+                                   array('>', '<'),
+                                   $block);
           }
-          
-          $inside[$i] = $preblock . $block;
+
+          if (count($dice_params) > 0)
+          {
+            $dice_params = '="' . implode (',', $dice_params) . '"]';
+          }
+          else
+          {
+            $dice_params = ']';
+          }
+
+          $inside[$i] = $dice_params . $block;
         }
       }
 
@@ -143,7 +172,7 @@ if (!function_exists('dr_parse'))
         {
           $text .= $outside[$j];
           if (isset($inside[$j]))
-            $text .= '[dice]'. $inside[$j] . '[/dice]';
+            $text .= '[dice'. $inside[$j] . '[/dice]';
         }
       }
       $outside_code[$key] = $text;
@@ -235,12 +264,11 @@ if (!function_exists('dr_parse_expression'))
   function dr_parse_expression($expression) {
     $result_expression = $expression;
     $result = $result_expression;
-    $result_expression = str_replace('do', 'o', $result_expression);
 
-    if (strpos ($result_expression, 'o') !== false)
+    if (strpos ($result_expression, 'do') !== false)
     {
       $result = '';
-      $throw = explode('o', $result_expression);
+      $throw = explode('do', $result_expression);
       if (isset($throw))
       {
         $results = array ();
