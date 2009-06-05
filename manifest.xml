@@ -36,7 +36,7 @@
 	<id>pun_dice</id>
 	<title>Pun dice roller</title>
 	<version>0.6</version>
-	<description>Adds dice rolle feature for topics.<br/>*Supports objective dice, parentesis ..<br/>*Support for objective dices ([dice]3do10[/dice])<br/>*Suppor for critics ([dice="critic"]1d8+3[/dice])</description>
+	<description>Adds dice rolle feature for topics.<br/>Supports objective dice, parentesis, bjective dices ([dice]3do10[/dice]), critics ([dice="critic"]1d8+3)[/dice])</description>
 	<author>Raúl Ferriz Candela</author>
 	<minversion>1.3</minversion>
 	<maxtestedon>1.3.4</maxtestedon>
