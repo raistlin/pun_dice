@@ -8,9 +8,12 @@
  * @package pun_dice
  *
  * Changelog:
- *  v0.4
+ *  v0.6
+ *	      Added support for Critics (use [dice="critic"]...[/dice])
+ *        When a result is the max result, add a dice
+ *  v0.5
  *	      Added support for objecttive dice (do)
- *  v0.3.4
+ *  v0.4
  *	      Added support for multiplication and division
  *  v0.3.3
  *	      Added support for parentesis
@@ -102,7 +105,7 @@ if (!function_exists('dr_parse'))
 
             foreach ($expressions as $expression)
             {
-              $tmp_result = dr_parse_expression($expression);
+              $tmp_result = dr_parse_expression($expression, $allow_critics);
               $block .= $tmp_result;
               $to_eval .= $tmp_result;
             }
@@ -261,12 +264,15 @@ if (!function_exists('dr_split_expression'))
 
 if (!function_exists('dr_parse_expression'))
 {
-  function dr_parse_expression($expression) {
+  function dr_parse_expression($expression, $allow_critics) {
     $result_expression = $expression;
     $result = $result_expression;
 
     if (strpos ($result_expression, 'do') !== false)
     {
+      if ( $allow_critics )
+        echo "Critics not allowed with objective dice, ignoring.";
+
       $result = '';
       $throw = explode('do', $result_expression);
       if (isset($throw))
@@ -300,10 +306,17 @@ if (!function_exists('dr_parse_expression'))
         for ($j = 0; $j < $num_dices; $j++)
         {
           $dice_result = dr_roll_dice((int)$throw[1]);
+
           $sum_result += $dice_result;
           if ($j > 0)
             $result .= ' + ';
           $result .= $dice_result;
+
+          if ( $allow_critics and ($dice_result == (int)$throw[1]))
+          {
+            $num_dices ++;
+          }
+
         }
       }
     }
