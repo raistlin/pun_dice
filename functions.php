@@ -96,7 +96,7 @@ if (!function_exists('dr_parse'))
 
           // Split in expressions
           $expressions = dr_split_expression($block);
-          $block = '(' . $block . ') : ';
+          $block = '( ' . $block . ' ) : ';
 
           if (isset($expressions))
           {
